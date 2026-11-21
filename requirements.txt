@@ -1,0 +1,9 @@
+dingtalkchatbot
+akshare
+prompt_toolkit
+datetime
+fire
+parsel
+exchange_calendars
+xtquant
+simplejson

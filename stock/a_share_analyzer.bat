@@ -1,0 +1,1 @@
+C:/Users/admin/AppData/Local/Microsoft/WindowsApps/python3.13.exe c:/Users/admin/Documents/MCGA/notice/stock/a_share_analyzer.py
