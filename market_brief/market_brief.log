@@ -7,3 +7,71 @@
 2026-11-21 16:27:07,409 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 15 行）
 2026-11-21 16:27:07,409 [INFO] 采集完成，缺失项：主力净流入_亿
 2026-11-21 16:27:07,669 [INFO] 钉钉推送成功
+2026-11-22 12:53:23,159 [INFO] 开始采集…
+2026-11-22 12:53:30,775 [WARNING] 采集失败 [两融-深交所20261120]: ValueError: Length mismatch: Expected axis has 0 elements, new values have 6 elements
+2026-11-22 12:53:42,417 [WARNING] 采集失败 [指数日K-东财sh000001]: ProxyError: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?sec
+2026-11-22 12:53:46,039 [WARNING] 采集失败 [指数日K-东财sz399106]: ProxyError: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?sec
+2026-11-22 12:53:50,356 [WARNING] 采集失败 [大盘资金流]: ProxyError: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/fflow/dayklin
+2026-11-22 12:54:13,427 [WARNING] 采集失败 [全A快照-东财]: ProxyError: HTTPSConnectionPool(host='82.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=1
+2026-11-22 12:54:44,739 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 15 行）
+2026-11-22 12:54:44,740 [INFO] 采集完成，缺失项：主力净流入_亿
+2026-11-22 12:56:14,599 [INFO] 开始采集…
+2026-11-22 12:56:18,952 [WARNING] 采集失败 [两融-深交所20261120]: ValueError: Length mismatch: Expected axis has 0 elements, new values have 6 elements
+2026-11-22 12:56:28,526 [WARNING] 采集失败 [指数日K-东财sh000001]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 12:56:32,123 [WARNING] 采集失败 [指数日K-东财sz399106]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 12:56:36,001 [WARNING] 采集失败 [大盘资金流]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 12:56:57,019 [WARNING] 采集失败 [全A快照-东财]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 12:57:21,713 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 15 行）
+2026-11-22 12:57:21,713 [INFO] 采集完成，缺失项：主力净流入_亿
+2026-11-22 12:57:21,714 [WARNING] 钉钉推送失败（详见上方日志）
+2026-11-22 13:01:01,444 [INFO] 开始采集…
+2026-11-22 13:01:06,064 [WARNING] 采集失败 [两融-深交所20261120]: ValueError: Length mismatch: Expected axis has 0 elements, new values have 6 elements
+2026-11-22 13:01:14,921 [WARNING] 采集失败 [指数日K-东财sh000001]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 13:01:18,402 [WARNING] 采集失败 [指数日K-东财sz399106]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 13:01:22,126 [WARNING] 采集失败 [大盘资金流]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 13:01:42,809 [WARNING] 采集失败 [全A快照-东财]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-22 13:02:15,462 [WARNING] CSV 被占用（可能正在 Excel 中打开），已另存为 market_data_2026-11-20.csv；关闭占用程序后重跑可写回主文件
+2026-11-22 13:02:15,462 [INFO] 采集完成，缺失项：主力净流入_亿
+2026-11-22 13:02:15,697 [INFO] 钉钉推送成功
+2026-11-23 09:15:46,069 [INFO] 开始采集…
+2026-11-23 09:16:01,523 [WARNING] 采集失败 [指数日K-东财sh000001]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 09:16:05,658 [WARNING] 采集失败 [指数日K-东财sz399106]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 09:16:09,648 [WARNING] 采集失败 [成交额-腾讯实时]: ValueError: 腾讯行情无成交额
+2026-11-23 09:16:13,085 [WARNING] 采集失败 [大盘资金流]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 09:18:18,919 [WARNING] 采集失败 [全A快照-东财]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 09:18:43,503 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 15 行）
+2026-11-23 09:18:43,503 [INFO] 采集完成，缺失项：A股成交额_亿、主力净流入_亿、大盘拥挤度%、TMT拥挤度%、TMT在前5%占比%
+2026-11-23 09:18:43,903 [INFO] 钉钉推送成功
+2026-11-23 17:06:12,754 [INFO] 开始采集…
+2026-11-23 17:06:24,139 [WARNING] 采集失败 [指数日K-东财sh000001]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:06:27,808 [WARNING] 采集失败 [指数日K-东财sz399106]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:06:31,878 [WARNING] 采集失败 [大盘资金流]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:06:55,076 [WARNING] 采集失败 [全A快照-东财]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:07:19,950 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 16 行）
+2026-11-23 17:07:19,950 [INFO] 采集完成，缺失项：主力净流入_亿
+2026-11-23 17:07:20,201 [INFO] 钉钉推送成功
+2026-11-23 17:14:59,809 [INFO] 开始采集…
+2026-11-23 17:15:11,293 [WARNING] 采集失败 [指数日K-东财sh000001]: ProxyError: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?sec
+2026-11-23 17:15:14,836 [WARNING] 采集失败 [指数日K-东财sz399106]: ProxyError: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?sec
+2026-11-23 17:15:32,692 [WARNING] 采集失败 [股债利差-乐咕]: APIError: API Error: legulegu 请求失败，请确认该站点在当前网络下可正常访问：504 Server Error: Gateway Time-out for url: https://legulegu.com/stockdata/eq
+2026-11-23 17:15:52,065 [WARNING] 采集失败 [全A快照-东财]: ProxyError: HTTPSConnectionPool(host='82.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=1
+2026-11-23 17:16:21,757 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 16 行）
+2026-11-23 17:16:21,758 [INFO] 采集完成，缺失项：主力净流入_亿、股债利差%、股债利差分位%
+2026-11-23 17:16:21,980 [INFO] 钉钉推送成功
+2026-11-23 17:53:13,755 [INFO] 开始采集…
+2026-11-23 17:53:23,477 [WARNING] 采集失败 [指数日K-东财sh000001]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:53:27,014 [WARNING] 采集失败 [指数日K-东财sz399106]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:53:31,257 [WARNING] 采集失败 [大盘资金流]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:53:49,508 [WARNING] 采集失败 [股债利差-乐咕]: APIError: API Error: legulegu 请求失败，请确认该站点在当前网络下可正常访问：504 Server Error: Gateway Time-out for url: https://legulegu.com/stockdata/eq
+2026-11-23 17:54:11,726 [WARNING] 采集失败 [全A快照-东财]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-23 17:54:35,102 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 16 行）
+2026-11-23 17:54:35,103 [INFO] 采集完成，缺失项：主力净流入_亿、股债利差%、股债利差分位%
+2026-11-23 17:54:35,332 [INFO] 钉钉推送成功
+2026-11-24 09:00:29,226 [INFO] 开始采集…
+2026-11-24 09:00:43,770 [WARNING] 采集失败 [指数日K-东财sh000001]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-24 09:00:47,569 [WARNING] 采集失败 [指数日K-东财sz399106]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-24 09:00:51,431 [WARNING] 采集失败 [大盘资金流]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-24 09:01:23,273 [WARNING] 采集失败 [全A快照-东财]: ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-11-24 09:01:47,209 [INFO] 已写入 C:\Users\admin\Documents\MCGA\notice\market_brief\market_data.csv（共 16 行）
+2026-11-24 09:01:47,209 [INFO] 采集完成，缺失项：主力净流入_亿、大盘拥挤度%、TMT拥挤度%、TMT在前5%占比%
+2026-11-24 09:01:47,522 [INFO] 钉钉推送成功

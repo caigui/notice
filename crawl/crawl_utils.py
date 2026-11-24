@@ -1,4 +1,6 @@
 import datetime
+import logging
+import os
 import requests
 import time
 from selenium import webdriver
@@ -51,44 +53,94 @@ def post_response(url, data):
     }
     return requests.post(url, data, cookies=cookies, headers=headers)
 
+# 集思录 cookie 缓存与降级配置
+# 说明：集思录 QDII 行情接口本身支持匿名访问，cookie 只用于提高限流阈值。
+# Selenium 自动登录依赖本机 msedgedriver 与 Edge 版本严格一致，版本错配时
+# 旧实现会每轮抛 SessionNotCreatedException 并刷屏（且残留浏览器进程）。
+# 因此这里改为：缓存优先 → 失败冷却 → 异常降级返回 None（无 cookie 继续取数）。
+_JSL_COOKIE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "state", "jsl_cookie.txt")
+_JSL_COOKIE_TTL = 1800             # 内存缓存 30 分钟
+_JSL_COOKIE_FILE_TTL = 12 * 3600   # 文件缓存 12 小时
+_JSL_COOKIE_FAIL_COOLDOWN = 6 * 3600  # 登录失败后 6 小时内不再拉起浏览器
+
+
+def _load_cached_jsl_cookie(now):
+    """读取跨进程 cookie 缓存；无有效缓存返回 None。"""
+    try:
+        if os.path.exists(_JSL_COOKIE_FILE) and \
+                now - os.path.getmtime(_JSL_COOKIE_FILE) < _JSL_COOKIE_FILE_TTL:
+            with open(_JSL_COOKIE_FILE, encoding="utf-8") as f:
+                text = f.read().strip()
+            return text or None
+    except Exception as e:
+        logging.getLogger(__name__).debug("读取集思录 cookie 缓存失败：%s", e)
+    return None
+
+
+def _save_cached_jsl_cookie(cookie_str):
+    try:
+        os.makedirs(os.path.dirname(_JSL_COOKIE_FILE), exist_ok=True)
+        with open(_JSL_COOKIE_FILE, "w", encoding="utf-8") as f:
+            f.write(cookie_str)
+    except Exception as e:
+        logging.getLogger(__name__).debug("写入集思录 cookie 缓存失败：%s", e)
+
+
 def get_jsl_cookie():
-    # Check if cookie is already cached and not expired (30 minutes = 1800 seconds)
-    current_time = time.time()
-    if hasattr(get_jsl_cookie, '_cached_cookie') and \
-       hasattr(get_jsl_cookie, '_cache_time') and \
-       (current_time - get_jsl_cookie._cache_time < 1800):
-        return get_jsl_cookie._cached_cookie
-    # 不打开浏览器
-    options = webdriver.EdgeOptions()
-    options.add_argument('headless')
-    options.add_argument('disable-gpu')
-    service = Service(r'C:\Program Files (x86)\Microsoft\Edge\Application\msedgedriver.exe')
-    web = webdriver.Edge(service=service, options=options)
-    # 打开浏览器
-    # web = webdriver.Edge()
-    
-    # 登陆
-    web.get('https://www.jisilu.cn/account/login/') # 打开登陆页
-    web.find_element(By.XPATH,'/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[2]/input').send_keys('17300260592')   # 填入账号
-    web.find_element(By.XPATH,'/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[3]/input').send_keys('caigui03902456')  # 填入密码
-    web.find_element(By.XPATH,'/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[5]/div[1]/input').click()    # 勾选记住我
-    web.find_element(By.XPATH,'/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[5]/div[2]/input').click()    # 勾选条款
-    web.find_element(By.XPATH,'/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[6]/a').click()   # 点击登陆
-    time.sleep(0.2)
-    
-    # 登陆后要爬取https://www.jisilu.cn/data/cbnew/cb_list_new/的数据，修改下面代码
-    web.get('https://www.jisilu.cn/data/cbnew/cb_list_new/')
-    
-    # 获取cookie
-    cookie = web.get_cookies()
-    cookie_str = '; '.join([str(x['name']) + '=' + str(x['value']) for x in cookie])
-    print("cookie_str: {}",cookie_str)
-    # Cache the cookie value and timestamp
-    get_jsl_cookie._cached_cookie = cookie_str
-    get_jsl_cookie._cache_time = current_time
-    # 关闭浏览器
-    web.quit()
-    return cookie_str
+    """获取集思录 cookie；自动登录失败时降级返回缓存或 None，不阻断行情策略。"""
+    now = time.time()
+    cached = getattr(get_jsl_cookie, "_cached_cookie", None)
+    if cached and now - getattr(get_jsl_cookie, "_cache_time", 0) < _JSL_COOKIE_TTL:
+        return cached
+    # 版本错配等失败后进入冷却，避免每轮重启浏览器刷屏
+    if now - getattr(get_jsl_cookie, "_fail_time", 0) < _JSL_COOKIE_FAIL_COOLDOWN:
+        return cached
+
+    cached = _load_cached_jsl_cookie(now) or cached
+    if cached:
+        get_jsl_cookie._cached_cookie = cached
+        get_jsl_cookie._cache_time = now
+        return cached
+
+    web = None
+    try:
+        options = webdriver.EdgeOptions()
+        options.add_argument("headless")
+        options.add_argument("disable-gpu")
+        service = Service(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedgedriver.exe")
+        web = webdriver.Edge(service=service, options=options)
+
+        web.get("https://www.jisilu.cn/account/login/")
+        web.find_element(By.XPATH, '/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[2]/input').send_keys('17300260592')
+        web.find_element(By.XPATH, '/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[3]/input').send_keys('caigui03902456')
+        web.find_element(By.XPATH, '/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[5]/div[1]/input').click()
+        web.find_element(By.XPATH, '/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[5]/div[2]/input').click()
+        web.find_element(By.XPATH, '/html/body/div[3]/div/div/div[1]/div[1]/div[3]/form/div[6]/a').click()
+        time.sleep(0.2)
+        web.get("https://www.jisilu.cn/data/cbnew/cb_list_new/")
+
+        cookie = web.get_cookies()
+        cookie_str = "; ".join([str(x["name"]) + "=" + str(x["value"]) for x in cookie])
+        get_jsl_cookie._cached_cookie = cookie_str
+        get_jsl_cookie._cache_time = now
+        get_jsl_cookie._fail_time = 0
+        _save_cached_jsl_cookie(cookie_str)
+        # 不再打印 cookie 明文（原实现会把登录态输出到日志）
+        return cookie_str
+    except Exception as e:
+        get_jsl_cookie._fail_time = now
+        first_line = str(e).splitlines()[0] if str(e) else ""
+        logging.getLogger(__name__).warning(
+            "集思录 cookie 自动登录失败（%s: %s），本轮降级为匿名取数；%d 小时内不再重试浏览器登录。",
+            type(e).__name__, first_line[:140], _JSL_COOKIE_FAIL_COOLDOWN // 3600)
+        return cached
+    finally:
+        if web is not None:
+            try:
+                web.quit()
+            except Exception:
+                pass
 
 def get_jsl_cookie2():
     # Get current timestamp and convert to int for cookie

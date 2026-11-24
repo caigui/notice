@@ -1,0 +1,211 @@
+已加载到的基金代码
+已加载到的基金代码
+Sending notifications...
+start qdii_query
+Series([], Name: T-1溢价率, dtype: float64)
+File 'woody_data.txt' is older than 30 minutes. Regenerating data...
+Starting synchronous execution of Selenium tasks for 7 URLs.
+Starting Selenium for URL: https://palmmicro.com/woody/res/qdiimixcn.php
+Starting Selenium for URL: https://palmmicro.com/woody/res/chinafuturecn.php
+Starting Selenium for URL: https://palmmicro.com/woody/res/chinaindexcn.php
+Error processing https://palmmicro.com/woody/res/qdiimixcn.php in get_est_single_url_sync: Message: session not created: This version of ChromeDriver only supports Chrome version 147
+Current browser version is 157.0.8103.80 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff604ff0295+146d5]
+	chromedriver!GetHandleVerifier [0x7ff604ff0300+14740]
+	chromedriver!(No symbol) [0x7ff604d5d7cd]
+	chromedriver!(No symbol) [0x7ff604da59bd]
+	chromedriver!(No symbol) [0x7ff604da4705]
+	chromedriver!(No symbol) [0x7ff604d9ea81]
+	chromedriver!(No symbol) [0x7ff604d99559]
+	chromedriver!(No symbol) [0x7ff604dedc21]
+	chromedriver!(No symbol) [0x7ff604ded486]
+	chromedriver!(No symbol) [0x7ff604da9018]
+	chromedriver!(No symbol) [0x7ff604da9f03]
+	chromedriver!GetHandleVerifier [0x7ff605305949+329d89]
+	chromedriver!GetHandleVerifier [0x7ff6052ffe96+3242d6]
+	chromedriver!GetHandleVerifier [0x7ff605323102+347542]
+	chromedriver!GetHandleVerifier [0x7ff60500d425+31865]
+	chromedriver!GetHandleVerifier [0x7ff60501605c+3a49c]
+	chromedriver!GetHandleVerifier [0x7ff604ff9684+1dac4]
+	chromedriver!GetHandleVerifier [0x7ff604ff9836+1dc76]
+	chromedriver!GetHandleVerifier [0x7ff604fde347+2787]
+	KERNEL32!BaseThreadInitThunk [0x7ffa0512dda7+17]
+	ntdll!RtlUserThreadStart [0x7ffa067b9c5c+2c]
+
+Finished Selenium for URL: https://palmmicro.com/woody/res/qdiimixcn.php, found 0 results.
+Starting Selenium for URL: https://palmmicro.com/woody/res/qdiihkcn.phpSuccessfully collected results from https://palmmicro.com/woody/res/qdiimixcn.php
+
+Error processing https://palmmicro.com/woody/res/chinafuturecn.php in get_est_single_url_sync: Message: session not created: This version of ChromeDriver only supports Chrome version 147
+Current browser version is 157.0.8103.80 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff604ff0295+146d5]
+	chromedriver!GetHandleVerifier [0x7ff604ff0300+14740]
+	chromedriver!(No symbol) [0x7ff604d5d7cd]
+	chromedriver!(No symbol) [0x7ff604da59bd]
+	chromedriver!(No symbol) [0x7ff604da4705]
+	chromedriver!(No symbol) [0x7ff604d9ea81]
+	chromedriver!(No symbol) [0x7ff604d99559]
+	chromedriver!(No symbol) [0x7ff604dedc21]
+	chromedriver!(No symbol) [0x7ff604ded486]
+	chromedriver!(No symbol) [0x7ff604da9018]
+	chromedriver!(No symbol) [0x7ff604da9f03]
+	chromedriver!GetHandleVerifier [0x7ff605305949+329d89]
+	chromedriver!GetHandleVerifier [0x7ff6052ffe96+3242d6]
+	chromedriver!GetHandleVerifier [0x7ff605323102+347542]
+	chromedriver!GetHandleVerifier [0x7ff60500d425+31865]
+	chromedriver!GetHandleVerifier [0x7ff60501605c+3a49c]
+	chromedriver!GetHandleVerifier [0x7ff604ff9684+1dac4]
+	chromedriver!GetHandleVerifier [0x7ff604ff9836+1dc76]
+	chromedriver!GetHandleVerifier [0x7ff604fde347+2787]
+	KERNEL32!BaseThreadInitThunk [0x7ffa0512dda7+17]
+	ntdll!RtlUserThreadStart [0x7ffa067b9c5c+2c]
+
+Finished Selenium for URL: https://palmmicro.com/woody/res/chinafuturecn.php, found 0 results.
+Starting Selenium for URL: https://palmmicro.com/woody/res/qdiijpcn.php
+Successfully collected results from https://palmmicro.com/woody/res/chinafuturecn.php
+Error processing https://palmmicro.com/woody/res/chinaindexcn.php in get_est_single_url_sync: Message: session not created: This version of ChromeDriver only supports Chrome version 147
+Current browser version is 157.0.8103.80 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff604ff0295+146d5]
+	chromedriver!GetHandleVerifier [0x7ff604ff0300+14740]
+	chromedriver!(No symbol) [0x7ff604d5d7cd]
+	chromedriver!(No symbol) [0x7ff604da59bd]
+	chromedriver!(No symbol) [0x7ff604da4705]
+	chromedriver!(No symbol) [0x7ff604d9ea81]
+	chromedriver!(No symbol) [0x7ff604d99559]
+	chromedriver!(No symbol) [0x7ff604dedc21]
+	chromedriver!(No symbol) [0x7ff604ded486]
+	chromedriver!(No symbol) [0x7ff604da9018]
+	chromedriver!(No symbol) [0x7ff604da9f03]
+	chromedriver!GetHandleVerifier [0x7ff605305949+329d89]
+	chromedriver!GetHandleVerifier [0x7ff6052ffe96+3242d6]
+	chromedriver!GetHandleVerifier [0x7ff605323102+347542]
+	chromedriver!GetHandleVerifier [0x7ff60500d425+31865]
+	chromedriver!GetHandleVerifier [0x7ff60501605c+3a49c]
+	chromedriver!GetHandleVerifier [0x7ff604ff9684+1dac4]
+	chromedriver!GetHandleVerifier [0x7ff604ff9836+1dc76]
+	chromedriver!GetHandleVerifier [0x7ff604fde347+2787]
+	KERNEL32!BaseThreadInitThunk [0x7ffa0512dda7+17]
+	ntdll!RtlUserThreadStart [0x7ffa067b9c5c+2c]
+
+Finished Selenium for URL: https://palmmicro.com/woody/res/chinaindexcn.php, found 0 results.
+Starting Selenium for URL: https://palmmicro.com/woody/res/qdiieucn.phpSuccessfully collected results from https://palmmicro.com/woody/res/chinaindexcn.php
+
+Error processing https://palmmicro.com/woody/res/qdiihkcn.php in get_est_single_url_sync: Message: session not created: This version of ChromeDriver only supports Chrome version 147
+Current browser version is 157.0.8103.80 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff604ff0295+146d5]
+	chromedriver!GetHandleVerifier [0x7ff604ff0300+14740]
+	chromedriver!(No symbol) [0x7ff604d5d7cd]
+	chromedriver!(No symbol) [0x7ff604da59bd]
+	chromedriver!(No symbol) [0x7ff604da4705]
+	chromedriver!(No symbol) [0x7ff604d9ea81]
+	chromedriver!(No symbol) [0x7ff604d99559]
+	chromedriver!(No symbol) [0x7ff604dedc21]
+	chromedriver!(No symbol) [0x7ff604ded486]
+	chromedriver!(No symbol) [0x7ff604da9018]
+	chromedriver!(No symbol) [0x7ff604da9f03]
+	chromedriver!GetHandleVerifier [0x7ff605305949+329d89]
+	chromedriver!GetHandleVerifier [0x7ff6052ffe96+3242d6]
+	chromedriver!GetHandleVerifier [0x7ff605323102+347542]
+	chromedriver!GetHandleVerifier [0x7ff60500d425+31865]
+	chromedriver!GetHandleVerifier [0x7ff60501605c+3a49c]
+	chromedriver!GetHandleVerifier [0x7ff604ff9684+1dac4]
+	chromedriver!GetHandleVerifier [0x7ff604ff9836+1dc76]
+	chromedriver!GetHandleVerifier [0x7ff604fde347+2787]
+	KERNEL32!BaseThreadInitThunk [0x7ffa0512dda7+17]
+	ntdll!RtlUserThreadStart [0x7ffa067b9c5c+2c]
+
+Finished Selenium for URL: https://palmmicro.com/woody/res/qdiihkcn.php, found 0 results.
+Starting Selenium for URL: https://palmmicro.com/woody/res/qdiicn.php
+Successfully collected results from https://palmmicro.com/woody/res/qdiihkcn.php
+Error processing https://palmmicro.com/woody/res/qdiieucn.php in get_est_single_url_sync: Message: session not created: This version of ChromeDriver only supports Chrome version 147
+Current browser version is 157.0.8103.80 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff604ff0295+146d5]
+	chromedriver!GetHandleVerifier [0x7ff604ff0300+14740]
+	chromedriver!(No symbol) [0x7ff604d5d7cd]
+	chromedriver!(No symbol) [0x7ff604da59bd]
+	chromedriver!(No symbol) [0x7ff604da4705]
+	chromedriver!(No symbol) [0x7ff604d9ea81]
+	chromedriver!(No symbol) [0x7ff604d99559]
+	chromedriver!(No symbol) [0x7ff604dedc21]
+	chromedriver!(No symbol) [0x7ff604ded486]
+	chromedriver!(No symbol) [0x7ff604da9018]
+	chromedriver!(No symbol) [0x7ff604da9f03]
+	chromedriver!GetHandleVerifier [0x7ff605305949+329d89]
+	chromedriver!GetHandleVerifier [0x7ff6052ffe96+3242d6]
+	chromedriver!GetHandleVerifier [0x7ff605323102+347542]
+	chromedriver!GetHandleVerifier [0x7ff60500d425+31865]
+	chromedriver!GetHandleVerifier [0x7ff60501605c+3a49c]
+	chromedriver!GetHandleVerifier [0x7ff604ff9684+1dac4]
+	chromedriver!GetHandleVerifier [0x7ff604ff9836+1dc76]
+	chromedriver!GetHandleVerifier [0x7ff604fde347+2787]
+	KERNEL32!BaseThreadInitThunk [0x7ffa0512dda7+17]
+	ntdll!RtlUserThreadStart [0x7ffa067b9c5c+2c]
+
+Finished Selenium for URL: https://palmmicro.com/woody/res/qdiieucn.php, found 0 results.
+Successfully collected results from https://palmmicro.com/woody/res/qdiieucn.php
+Error processing https://palmmicro.com/woody/res/qdiijpcn.php in get_est_single_url_sync: Message: session not created: This version of ChromeDriver only supports Chrome version 147
+Current browser version is 157.0.8103.80 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff604ff0295+146d5]
+	chromedriver!GetHandleVerifier [0x7ff604ff0300+14740]
+	chromedriver!(No symbol) [0x7ff604d5d7cd]
+	chromedriver!(No symbol) [0x7ff604da59bd]
+	chromedriver!(No symbol) [0x7ff604da4705]
+	chromedriver!(No symbol) [0x7ff604d9ea81]
+	chromedriver!(No symbol) [0x7ff604d99559]
+	chromedriver!(No symbol) [0x7ff604dedc21]
+	chromedriver!(No symbol) [0x7ff604ded486]
+	chromedriver!(No symbol) [0x7ff604da9018]
+	chromedriver!(No symbol) [0x7ff604da9f03]
+	chromedriver!GetHandleVerifier [0x7ff605305949+329d89]
+	chromedriver!GetHandleVerifier [0x7ff6052ffe96+3242d6]
+	chromedriver!GetHandleVerifier [0x7ff605323102+347542]
+	chromedriver!GetHandleVerifier [0x7ff60500d425+31865]
+	chromedriver!GetHandleVerifier [0x7ff60501605c+3a49c]
+	chromedriver!GetHandleVerifier [0x7ff604ff9684+1dac4]
+	chromedriver!GetHandleVerifier [0x7ff604ff9836+1dc76]
+	chromedriver!GetHandleVerifier [0x7ff604fde347+2787]
+	KERNEL32!BaseThreadInitThunk [0x7ffa0512dda7+17]
+	ntdll!RtlUserThreadStart [0x7ffa067b9c5c+2c]
+
+Finished Selenium for URL: https://palmmicro.com/woody/res/qdiijpcn.php, found 0 results.
+Successfully collected results from https://palmmicro.com/woody/res/qdiijpcn.php
+Error processing https://palmmicro.com/woody/res/qdiicn.php in get_est_single_url_sync: Message: session not created: This version of ChromeDriver only supports Chrome version 147
+Current browser version is 157.0.8103.80 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff604ff0295+146d5]
+	chromedriver!GetHandleVerifier [0x7ff604ff0300+14740]
+	chromedriver!(No symbol) [0x7ff604d5d7cd]
+	chromedriver!(No symbol) [0x7ff604da59bd]
+	chromedriver!(No symbol) [0x7ff604da4705]
+	chromedriver!(No symbol) [0x7ff604d9ea81]
+	chromedriver!(No symbol) [0x7ff604d99559]
+	chromedriver!(No symbol) [0x7ff604dedc21]
+	chromedriver!(No symbol) [0x7ff604ded486]
+	chromedriver!(No symbol) [0x7ff604da9018]
+	chromedriver!(No symbol) [0x7ff604da9f03]
+	chromedriver!GetHandleVerifier [0x7ff605305949+329d89]
+	chromedriver!GetHandleVerifier [0x7ff6052ffe96+3242d6]
+	chromedriver!GetHandleVerifier [0x7ff605323102+347542]
+	chromedriver!GetHandleVerifier [0x7ff60500d425+31865]
+	chromedriver!GetHandleVerifier [0x7ff60501605c+3a49c]
+	chromedriver!GetHandleVerifier [0x7ff604ff9684+1dac4]
+	chromedriver!GetHandleVerifier [0x7ff604ff9836+1dc76]
+	chromedriver!GetHandleVerifier [0x7ff604fde347+2787]
+	KERNEL32!BaseThreadInitThunk [0x7ffa0512dda7+17]
+	ntdll!RtlUserThreadStart [0x7ffa067b9c5c+2c]
+
+Finished Selenium for URL: https://palmmicro.com/woody/res/qdiicn.php, found 0 results.
+Successfully collected results from https://palmmicro.com/woody/res/qdiicn.php
+Finished all Selenium tasks. Collected 0 items.
+Removed existing file: C:\Users\admin\Documents\MCGA\notice\crawl\woody_data.txt
+Results saved to C:\Users\admin\Documents\MCGA\notice\crawl\woody_data.txt
+Reading data from 'C:\Users\admin\Documents\MCGA\notice\crawl\woody_data.txt'...
+Successfully read and processed data. Found 0 codes.
+No real-time data available. Skipping updates.
+2026-11-23 17:24:31,216 - WARNING - 集思录 cookie 自动登录失败（SessionNotCreatedException: Message: session not created: This version of Microsoft Edge WebDriver only supports Microsoft Edge version 151），本轮降级为匿名取数；6 小时内不再重试浏览器登录。
+2026-11-23 17:24:31,699 - WARNING - QDII 数据源 欧美商品 取数失败，本轮跳过："None of [Index(['代码', '名称', '现价', '涨幅', '成交', '场内份额', '场内新增', 'T-2净值', '净值日期', 'T-1估值',\n       '估值日期', 'T-1溢价率', '相关标的', 'T-1指数涨幅', '申购费',

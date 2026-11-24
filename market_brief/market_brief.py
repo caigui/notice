@@ -16,7 +16,8 @@
   python market_brief.py --image           # 额外生成本地 PNG 报表（默认不生成）
 
 依赖：pip install akshare requests schedule（钉钉推送只用 requests，无需额外 SDK）
-数据源：akshare（上交所/深交所/中证指数/新浪/东方财富）+ 腾讯/新浪备用，见各函数注释。
+数据源：akshare（上交所/深交所/中证指数/新浪/东方财富）+ 腾讯/新浪备用，见各函数注释；
+        黄金 CFTC 非商业持仓（COMEX）：futuresbench（CFTC 官方 COT 整理，最新52周）+ akshare 全历史底座。
 """
 
 import sys
@@ -273,6 +274,100 @@ def collect_oil_gold():
     if hf is not None:
         out["纳指期货_点"] = hf["last"]
         out["纳指期货涨跌幅%"] = round((hf["last"] / hf["prev_settle"] - 1) * 100, 4)
+    return out
+
+
+def collect_gold_cot():
+    """黄金 CFTC 非商业持仓（COMEX，基金/投机盘）：多头 / 空头 / 净多 + 空头全历史百分位。
+
+    CFTC 周报：每周五发布截至上周二的持仓（滞后约 3 天），akshare 金十镜像通常滞后 2-3 周，
+    故以 futuresbench.com（CFTC 官方 COT 数据的整理页，内嵌近 52 周序列）补最新一期，
+    再用 akshare 全历史序列作底座计算全历史百分位。两源在重叠期口径一致（已交叉验证）。
+
+    返回字段：黄金COT报告日 / 多头 / 空头 / 净多 / 空头全历史分位% / 空头周变化 / 净多周变化。
+    任一源失败均有降级：仅 futuresbench → 用 52 周算分位并标注；仅 akshare → 用其最新一期（较旧）。
+    """
+    import json
+    import re
+
+    keys = ["黄金COT报告日", "黄金COT多头", "黄金COT空头", "黄金COT净多",
+            "黄金COT空头全历史分位%", "黄金COT空头周变化", "黄金COT净多周变化"]
+    out = {k: MISSING for k in keys}
+    out["_note"] = ""
+
+    # --- 源1：futuresbench 近 52 周（最新，含报告日）---
+    fb = None
+    try:
+        import requests as _req
+        hdr = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120"}
+        r = _req.get("https://futuresbench.com/cot/gold", headers=hdr, timeout=25)
+        r.raise_for_status()
+        html = r.text
+        dates = json.loads(re.search(r'"dates":(\[[^\]]+\])', html).group(1))
+        longs = json.loads(re.search(r'"long":\{"noncomm":(\[[^\]]+\])', html).group(1))
+        nets = json.loads(re.search(r'"net":\{"noncomm":(\[[^\]]+\])', html).group(1))
+        if len(dates) == len(longs) == len(nets) and dates:
+            # short = long - net（net 为净多 = 多 - 空）
+            fb = [{"date": d, "long": longs[i], "short": longs[i] - nets[i], "net": nets[i]}
+                  for i, d in enumerate(dates)]
+    except Exception as e:
+        log.warning("采集失败 [黄金COT-futuresbench]: %s: %s", type(e).__name__, str(e)[:100])
+        out["_note"] += "COT最新源失败;"
+
+    # --- 源2：akshare 全历史（底座，算全历史分位）---
+    hist = None
+    try:
+        import akshare as ak
+        df = ak.macro_usa_cftc_c_holding()
+        df["日期"] = pd.to_datetime(df["日期"]).dt.strftime("%Y-%m-%d")
+        df = df.sort_values("日期")
+        df["黄金-空头仓位"] = pd.to_numeric(df["黄金-空头仓位"], errors="coerce")
+        df["黄金-多头仓位"] = pd.to_numeric(df["黄金-多头仓位"], errors="coerce")
+        df["黄金-净仓位"] = pd.to_numeric(df["黄金-净仓位"], errors="coerce")
+        df = df.dropna(subset=["黄金-空头仓位"])
+        df = df[df["黄金-空头仓位"] > 0]
+        hist = [{"date": r["日期"], "long": int(r["黄金-多头仓位"]),
+                 "short": int(r["黄金-空头仓位"]), "net": int(r["黄金-净仓位"])}
+                for _, r in df.iterrows()]
+    except Exception as e:
+        log.warning("采集失败 [黄金COT-akshare历史]: %s: %s", type(e).__name__, str(e)[:100])
+        out["_note"] += "COT历史底座失败;"
+
+    # --- 合并：底座 + 最新源覆盖/追加（按日期去重）---
+    series = None
+    if hist and fb:
+        m = {x["date"]: x for x in hist}
+        for x in fb:
+            m[x["date"]] = x
+        series = [m[d] for d in sorted(m.keys())]
+    elif fb:
+        series = fb
+        out["_note"] += "COT全历史分位用近52周近似;"
+    elif hist:
+        series = hist
+        out["_note"] += "COT最新数据缺失,用akshare较旧一期;"
+
+    if not series:
+        return out
+
+    last = series[-1]
+    out["黄金COT报告日"] = last["date"]
+    out["黄金COT多头"] = last["long"]
+    out["黄金COT空头"] = last["short"]
+    out["黄金COT净多"] = last["net"]
+
+    # 空头全历史百分位：当前值在序列中小于其的样本占比
+    shorts = [x["short"] for x in series]
+    pct = sum(1 for s in shorts if s < last["short"]) / len(series) * 100
+    out["黄金COT空头全历史分位%"] = round(pct, 1)
+
+    # 周环比变化
+    if len(series) >= 2:
+        prev = series[-2]
+        out["黄金COT空头周变化"] = last["short"] - prev["short"]
+        out["黄金COT净多周变化"] = last["net"] - prev["net"]
+
+    out["_note"] += f"COT报告日={last['date']}(CFTC非商业/COMEX黄金)"
     return out
 
 
@@ -1092,6 +1187,7 @@ def collect_all():
     parts = [
         collect_margin(),
         collect_oil_gold(),
+        collect_gold_cot(),
         collect_global_indices(),
         collect_a_share(target_date=trade_date),
         collect_ratio(),
@@ -1162,7 +1258,10 @@ CSV_COLUMNS = [
     "韩国KOSPI_点", "韩国KOSPI涨跌幅%",
     # 商品
     "布油_美元", "布油涨跌幅%", "WTI_美元", "WTI涨跌幅%",
+    # 贵金属（价格 + CFTC 多空持仓）
     "COMEX黄金_美元", "黄金涨跌幅%", "COMEX白银_美元", "白银涨跌幅%", "金银比",
+    "黄金COT报告日", "黄金COT多头", "黄金COT空头", "黄金COT净多",
+    "黄金COT空头全历史分位%", "黄金COT空头周变化", "黄金COT净多周变化",
     # 利率
     "美债2Y%", "美债10Y%", "美债30Y%",
     # 备注
@@ -1263,14 +1362,25 @@ def _report_sections(row):
               f"历史分位 {fmt(row.get('偏债混合3年分位%'), 1)}%"],
          ],
          set()),
+        ("贵金属 · 黄金/白银/金银比",
+         ["指标", "价格/持仓", "涨跌幅 / 说明"],
+         [
+             ["COMEX 黄金", f("COMEX黄金_美元"), s("黄金涨跌幅%")],
+             ["COMEX 白银", f("COMEX白银_美元"), s("白银涨跌幅%")],
+             ["金银比", f("金银比"), "金价÷银价"],
+             ["COT 多头(非商业)", f("黄金COT多头", 0), "手 · CFTC/COMEX"],
+             ["COT 空头(非商业)", f("黄金COT空头", 0),
+              f"手 · 全历史分位 {fmt(row.get('黄金COT空头全历史分位%'), 1)}%"],
+             ["COT 净多(非商业)", f("黄金COT净多", 0),
+              f"手 · 周变 {sign(row.get('黄金COT净多周变化'), 0)}"],
+             ["COT 报告日", str(row.get("黄金COT报告日") or "--"), "CFTC周报·周五发布"],
+         ],
+         {2}),
         ("海外与商品",
          ["指标", "价格", "涨跌幅"],
          [
              ["布伦特原油", f("布油_美元"), s("布油涨跌幅%")],
              ["WTI 原油", f("WTI_美元"), s("WTI涨跌幅%")],
-             ["COMEX 黄金", f("COMEX黄金_美元"), s("黄金涨跌幅%")],
-             ["COMEX 白银", f("COMEX白银_美元"), s("白银涨跌幅%")],
-             ["金银比", f("金银比"), "金价÷银价"],
              ["纳指期货(连续)", f("纳指期货_点"), s("纳指期货涨跌幅%")],
              ["标普500", "—", s("标普500涨跌幅%")],
              ["纳斯达克", "—", s("纳指涨跌幅%")],
@@ -1416,14 +1526,22 @@ def build_message(row, missing):
         "",
     ]
     lines += [
+        "**贵金属 · 黄金/白银/金银比**",
+        "| 指标 | 数值 | 说明 |",
+        "| --- | --- | --- |",
+        f"| COMEX 黄金 | {fmt(row['COMEX黄金_美元'])} | {sign(row['黄金涨跌幅%'])}% |",
+        f"| COMEX 白银 | {fmt(row.get('COMEX白银_美元'))} | {sign(row.get('白银涨跌幅%'))}% |",
+        f"| 金银比 | {fmt(row.get('金银比'))} | 金价÷银价 |",
+        f"| COT 多头(非商业) | {fmt(row.get('黄金COT多头'), 0)} | 手 · CFTC/COMEX |",
+        f"| COT 空头(非商业) | {fmt(row.get('黄金COT空头'), 0)} | 手 · 全历史分位 {fmt(row.get('黄金COT空头全历史分位%'), 1)}% |",
+        f"| COT 净多(非商业) | {fmt(row.get('黄金COT净多'), 0)} | 手 · 周变 {sign(row.get('黄金COT净多周变化'), 0)} |",
+        f"| COT 报告日 | {row.get('黄金COT报告日') or '--'} | CFTC周报·周五发布 |",
+        "",
         "**海外与商品**",
         "| 指标 | 数值 | 涨跌幅 |",
         "| --- | --- | --- |",
         f"| 布伦特原油 | {fmt(row['布油_美元'])} | {sign(row['布油涨跌幅%'])}% |",
         f"| WTI 原油 | {fmt(row['WTI_美元'])} | {sign(row['WTI涨跌幅%'])}% |",
-        f"| COMEX 黄金 | {fmt(row['COMEX黄金_美元'])} | {sign(row['黄金涨跌幅%'])}% |",
-        f"| COMEX 白银 | {fmt(row.get('COMEX白银_美元'))} | {sign(row.get('白银涨跌幅%'))}% |",
-        f"| 金银比 | {fmt(row.get('金银比'))} | - |",
         f"| 标普500 | - | {sign(row['标普500涨跌幅%'])}% |",
         f"| 纳斯达克 | - | {sign(row['纳指涨跌幅%'])}% |",
         f"| 小型纳指期货(连续) | {fmt(row.get('纳指期货_点'))} | {sign(row.get('纳指期货涨跌幅%'))}% |",
@@ -1442,7 +1560,7 @@ def build_message(row, missing):
         lines += [f"> 注：{row['备注']}", ""]
     if missing:
         lines += [f"> ⚠️ 本次缺失：{'、'.join(missing)}", ""]
-    lines += [f"数据来源：交易所/中证指数/新浪/东方财富（akshare），采集时间 {row['采集时间']}"]
+    lines += [f"数据来源：交易所/中证指数/新浪/东方财富（akshare）、CFTC 黄金持仓（COMEX），采集时间 {row['采集时间']}"]
     return "\n".join(lines)
 
 

@@ -21,6 +21,8 @@ from crawl.crawl_utils import get_jsl_cookie, get_response, post_response, outpu
 class CancellableTask:
     def __init__(self):
         self._is_cancelled = False
+        self._last_error = None
+        self._last_error_time = 0
     async def loop(self):
         while not self._is_cancelled:
             try:
@@ -31,7 +33,14 @@ class CancellableTask:
                 logging.info(f"{self.__class__.__name__}: Task cancelled.")
                 break
             except Exception as e:
-                logging.error(f"{self.__class__.__name__}: An error occurred: {e}", exc_info=True)
+                # 同一异常 5 分钟内只打一次完整堆栈，避免异常时每轮刷屏
+                now = time.time()
+                sig = (type(e).__name__, str(e)[:160])
+                if sig != getattr(self, '_last_error', None) or \
+                        now - getattr(self, '_last_error_time', 0) >= 300:
+                    logging.error(f"{self.__class__.__name__}: An error occurred: {e}", exc_info=True)
+                    self._last_error, self._last_error_time = sig, now
+                await asyncio.sleep(10)
     async def run_task(self):
         """This method has to be implemented by the child class"""
         raise NotImplementedError()
@@ -119,15 +128,29 @@ class QDIIQueryStrategy(CancellableTask):
         return filtered_df_change
     
     async def run_task(self):
-        cookie = get_jsl_cookie()
+        # cookie 只用于提高集思录限流阈值；失败时降级匿名取数，不阻断策略
+        try:
+            cookie = get_jsl_cookie()
+        except Exception as e:
+            logging.warning("QDII 策略获取集思录 cookie 失败，降级匿名取数：%s", e)
+            cookie = None
         while True:
             if date_utils.is_trading_time():
                 print("start qdii_query")
-                qdii_e_index_jsl_df = qdii_e_index_jsl(cookie)
-                qdii_e_comm_jsl_df = qdii_e_comm_jsl(cookie)
-                qdii_a_index_jsl_df = qdii_a_index_jsl()
-                lof_stock_jsl_df = lof_stock_jsl()
-                lof_index_jsl_df = lof_index_jsl()
+                # 单个数据源异常不应中断整轮：失败则本源返回空表并记一条告警
+                def _safe_fetch(name, fn, *args):
+                    try:
+                        return fn(*args)
+                    except Exception as e:
+                        logging.warning("QDII 数据源 %s 取数失败，本轮跳过：%s",
+                                        name, str(e).splitlines()[0][:140])
+                        return []
+
+                qdii_e_index_jsl_df = _safe_fetch("欧美指数", qdii_e_index_jsl, cookie)
+                qdii_e_comm_jsl_df = _safe_fetch("欧美商品", qdii_e_comm_jsl, cookie)
+                qdii_a_index_jsl_df = _safe_fetch("亚洲指数", qdii_a_index_jsl)
+                lof_stock_jsl_df = _safe_fetch("LOF股票", lof_stock_jsl)
+                lof_index_jsl_df = _safe_fetch("LOF指数", lof_index_jsl)
 
                  # 将数据转换为DataFrame并合并
                 df_index = pd.DataFrame(qdii_e_index_jsl_df)

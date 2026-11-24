@@ -1,0 +1,16 @@
+[2026/11/23 周一 17:06:10.62] launcher start, python=C:\Users\admin\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe 
+[2026/11/23 周一 17:06:10.62] launching market_brief\main.bat once 
+[2026/11/23 周一 17:06:11.07] registered daily task NoticeIm1000DailyUpdate at 15:00 
+[2026/11/23 周一 17:06:11.08] starting main.py 
+[2026/11/23 周一 17:14:57.67] launcher start, python=C:\Users\admin\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe 
+[2026/11/23 周一 17:14:57.68] launching market_brief\main.bat once 
+[2026/11/23 周一 17:14:57.81] WARN: failed to register daily task NoticeIm1000DailyUpdate 
+[2026/11/23 周一 17:14:57.81] starting main.py 
+[2026/11/23 周一 17:53:12.09] launcher start, python=C:\Users\admin\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe 
+[2026/11/23 周一 17:53:12.09] launching market_brief\main.bat once 
+[2026/11/23 周一 17:53:12.32] registered daily task NoticeIm1000DailyUpdate at 15:00 
+[2026/11/23 周一 17:53:12.32] starting main.py 
+[2026/11/24 周二  9:00:27.58] launcher start, python=C:\Users\admin\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe 
+[2026/11/24 周二  9:00:27.58] launching market_brief\main.bat once 
+[2026/11/24 周二  9:00:27.76] registered daily task NoticeIm1000DailyUpdate at 15:00 
+[2026/11/24 周二  9:00:27.76] starting main.py 

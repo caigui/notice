@@ -1,0 +1,27 @@
+已加载到的基金代码
+已加载到的基金代码
+Sending notifications...
+start qdii_query
+Series([], Name: T-1溢价率, dtype: float64)
+File 'woody_data.txt' exists and is up-to-date.
+Reading data from 'C:\Users\admin\Documents\MCGA\notice\crawl\woody_data.txt'...
+Successfully read and processed data. Found 0 codes.
+No real-time data available. Skipping updates.
+start eft_query
+start money_fund_query
+Checking current price...
+**配债机会** · 三联锻造(001282) 现价 **15.01**，跌破关注下界 20.0
+- 配债参数：342/8.4%
+**配债机会** · 龙建股份(600853) 现价 **3.41**，跌破关注下界 4.2
+- 配债参数：700/7.5%
+**配债机会** · 美力科技(300611) 现价 **16.96**，跌破关注下界 26.0
+- 配债参数：700/1%
+**配债机会** · 博士眼镜(300622) 现价 **14.79**，跌破关注下界 30.0
+- 配债参数：600/1%
+2026-11-23 17:28:04,103 - WARNING - 集思录 cookie 自动登录失败（SessionNotCreatedException: Message: session not created: This version of Microsoft Edge WebDriver only supports Microsoft Edge version 151），本轮降级为匿名取数；6 小时内不再重试浏览器登录。
+2026-11-23 17:28:04,654 - WARNING - QDII 数据源 欧美商品 取数失败，本轮跳过："None of [Index(['代码', '名称', '现价', '涨幅', '成交', '场内份额', '场内新增', 'T-2净值', '净值日期', 'T-1估值',\n       '估值日期', 'T-1溢价率', '相关标的', 'T-1指数涨幅', '申购费',
+2026-11-23 17:28:18,841 - INFO - 获取股票信息完成.
+2026-11-23 17:28:19,042 - INFO - 配债 001282 触发提醒，现价 15.01，发送=True
+2026-11-23 17:28:19,260 - INFO - 配债 600853 触发提醒，现价 3.41，发送=True
+2026-11-23 17:28:19,496 - INFO - 配债 300611 触发提醒，现价 16.96，发送=True
+2026-11-23 17:28:19,727 - INFO - 配债 300622 触发提醒，现价 14.79，发送=True

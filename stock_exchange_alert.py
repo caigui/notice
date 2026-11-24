@@ -1,4 +1,8 @@
 import time
+import os
+import json
+import re
+from datetime import date
 from globalVar import log
 from stock_info import StockInfo
 from wechatPublicCountSendMessage import SendMessage
@@ -7,6 +11,71 @@ import requests
 from dingtalk_utils import DingTalkNotifier
 import asyncio
 import date_utils
+
+_STATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state")
+_STATE_FILE = os.path.join(_STATE_DIR, "stock_notice_state.json")
+
+
+def _read_sent_keys():
+    try:
+        with open(_STATE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f) or {}
+        if data.get("date") == date.today().isoformat():
+            return set(data.get("sent") or [])
+    except Exception:
+        pass
+    return set()
+
+
+def _mark_sent(key):
+    try:
+        keys = _read_sent_keys()
+        keys.add(key)
+        if not os.path.isdir(_STATE_DIR):
+            os.makedirs(_STATE_DIR)
+        tmp = _STATE_FILE + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump({"date": date.today().isoformat(), "sent": sorted(keys)},
+                      f, ensure_ascii=False, indent=2)
+        os.replace(tmp, _STATE_FILE)
+    except Exception as e:
+        log.logger.error(f"记录事件提醒状态失败: {e}")
+
+
+def _offer_price(notes, price_max):
+    m = re.search(r"要约价\s*[:：]?\s*([0-9]+(?:\.[0-9]+)?)", notes or "")
+    return float(m.group(1)) if m else price_max
+
+
+def _event_message(code, cfg, current, direction):
+    """把事件类型 + 触发原因写进钉钉正文，而不是只有一句 Price Alert。"""
+    ev = cfg.get("type", "配债")
+    name = cfg.get("name") or code
+    notes = cfg.get("notes") or ""
+    pmin, pmax = cfg["price_min"], cfg["price_max"]
+    side = ("跌破关注下界 %s" % pmin) if direction == "below" else ("突破关注上界 %s" % pmax)
+
+    if ev == "配债":
+        text = f"**配债机会** · {name}({code}) 现价 **{current}**，{side}"
+        if notes:
+            text += f"\n- 配债参数：{notes}"
+        return text
+
+    if ev in ("要约收购", "私有化", "吸收合并"):
+        offer = _offer_price(notes, pmax)
+        text = (f"**{ev}机会** · {name}({code}) 现价 **{current}**，{side}")
+        if current:
+            spread = (offer - current) / current * 100.0
+            text += f"\n- 参考价 {offer}，隐含价差 **{spread:+.2f}%**"
+        if notes:
+            text += f"\n- 备注：{notes}"
+        return text
+
+    text = f"**{ev}机会** · {name}({code}) 现价 **{current}**，{side}"
+    if notes:
+        text += f"\n- 备注：{notes}"
+    return text
+
 
 """股票监控类,达到设定价格进行提醒"""
 class StockMonitor:
@@ -22,54 +91,39 @@ class StockMonitor:
         print("Checking current price...")
         # print(self.stockInfo.stock_data)
         for data in self.stockInfo.stock_data:
-            # print(data)
             stock_code = data[1]
             current_price = data[2]
-            #print(f"Stock code: {stock_code}, Current price: {current_price}")
-            
-            # Initialize the alert count and last alert time if not set
-            self.alert_price[stock_code].setdefault('alert_count', 0)
-            self.alert_price[stock_code].setdefault('last_alert_time', 0)  # 新增 last_alert_time
-            
-            # Skip if stock is not in the alert price list
-            if stock_code not in self.alert_price:
-                continue
-            
-            # Skip if the alert count is already 1
-            if self.alert_price[stock_code]['alert_count'] >= 1:
+            cfg = self.alert_price.get(stock_code)
+            if not cfg:
                 continue
 
-            # Get the min and max alert price for the stock
-            price_min = self.alert_price[stock_code]['price_min']
-            price_max = self.alert_price[stock_code]['price_max']
-            
-            # Determine if the current price exceeds the alert range
+            cfg.setdefault('alert_count', 0)
+            cfg.setdefault('last_alert_time', 0)
+            ev = cfg.get('type', '配债')
+            sent_key = "%s|%s" % (stock_code, ev)
+            if sent_key in _read_sent_keys():
+                continue                       # 同日同类型已提醒（跨进程有效）
+
+            price_min, price_max = cfg['price_min'], cfg['price_max']
             if current_price <= price_min:
                 alert_type = "below"
             elif current_price >= price_max:
                 alert_type = "above"
             else:
-                continue  # No alert if within the range
-            
-            # Get the current timestamp
+                continue
+
             current_time = time.time()
-            last_alert_time = self.alert_price[stock_code]['last_alert_time']
+            if current_time - cfg['last_alert_time'] < 300:
+                continue
 
-            # Check if 5 minutes have passed since the last alert
-            if current_time - last_alert_time < 300:  # 300 seconds = 5 minutes
-                continue  # Skip if less than 5 minutes passed since last alert
-
-            # Send alert if conditions are met
-            message = f"Stock {stock_code} triggered an alert! Current price: {current_price}, Alert condition: {alert_type}"
+            message = _event_message(stock_code, cfg, current_price, alert_type)
+            ok = self.notifier.send_alert(message, "股票事件机会提醒")
             print(message)
-            self.alert_price[stock_code]['alert_count'] += 1
-            log.logger.info(f"Stock {stock_code} alert triggered, price: {current_price}, alert count: {self.alert_price[stock_code]['alert_count']}")
-            
-            # Send the alert via DingTalk
-            self.notifier.send_alert(message, "Price Alert")
-
-            # Update last alert time
-            self.alert_price[stock_code]['last_alert_time'] = current_time
+            log.logger.info(f"{ev} {stock_code} 触发提醒，现价 {current_price}，发送={ok}")
+            if ok:
+                cfg['alert_count'] += 1
+                cfg['last_alert_time'] = current_time
+                _mark_sent(sent_key)            # 只在推送成功后落状态
 
     async def loop_check(self, interval_seconds=300, max_retries=3):
         """异步循环检查股票价格，直到达到指定的告警条件"""

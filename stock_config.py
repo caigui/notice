@@ -5,6 +5,9 @@ from prompt_toolkit.styles import Style
 from globalVar import log
 import csv
 
+EVENT_TYPES = ("配债", "要约收购", "私有化", "吸收合并", "其他")
+
+
 class StockConfig(object):
     """
     股票预警类，用于读取股票预警配置文件，获取股票预警信息。
@@ -25,22 +28,48 @@ class StockConfig(object):
         """返回交易所消息"""
         return self.__se_info
 
+    @staticmethod
+    def _read_csv_text(file_path):
+        """stock_notice.csv 历史为 GBK/GB18030，兼容 UTF-8 与 BOM。"""
+        last_err = None
+        for enc in ("utf-8-sig", "gb18030", "gbk"):
+            try:
+                with open(file_path, mode='r', newline='', encoding=enc) as f:
+                    return f.read()
+            except UnicodeDecodeError as e:
+                last_err = e
+        raise last_err or IOError("无法解码 %s" % file_path)
+
     def read_stock_data(self, file_path):
         """
         读取 CSV 文件并返回格式化的股票数据。
-        CSV 格式: stock_code, name, price_min, price_max
+        CSV 格式: stock_code, name, price_min, price_max, type, notes
+        `type` 缺省为「配债」，兼容旧版 5 列文件；空行/模板行直接跳过。
         """
         stock_data = []
         try:
-            with open(file_path, mode='r', newline='', encoding='utf-8') as file:
-                csv_reader = csv.DictReader(file)  # 使用 DictReader 读取 CSV
-                for row in csv_reader:
-                    stock_data.append({
-                        "stock_code": row["stock_code"].strip(),
-                        "name": row["name"].strip(),
-                        "price_min": float(row["price_min"]),
-                        "price_max": float(row["price_max"]),
-                    })
+            text = self._read_csv_text(file_path)
+            for row in csv.DictReader(text.splitlines()):
+                code = (row.get("stock_code") or "").strip().lstrip("\ufeff")
+                if not code:
+                    continue                      # 模板行 / 空行
+                try:
+                    pmin = float(row.get("price_min") or "")
+                    pmax = float(row.get("price_max") or "")
+                except ValueError:
+                    print(f"跳过价格无效的行: {code}")
+                    continue
+                ev_type = (row.get("type") or "配债").strip() or "配债"
+                if ev_type not in EVENT_TYPES:
+                    ev_type = "其他"
+                stock_data.append({
+                    "stock_code": code,
+                    "name": (row.get("name") or "").strip(),
+                    "price_min": pmin,
+                    "price_max": pmax,
+                    "type": ev_type,
+                    "notes": (row.get("notes") or "").strip(),
+                })
         except Exception as e:
             print(f"读取文件出错: {e}")
         return stock_data
@@ -85,7 +114,10 @@ class StockConfig(object):
             stock_code = stock["stock_code"]
             price_range = {
                 "price_min": stock["price_min"],
-                "price_max": stock["price_max"]
+                "price_max": stock["price_max"],
+                "type": stock.get("type", "配债"),
+                "notes": stock.get("notes", ""),
+                "name": stock.get("name", ""),
             }
             stock_id_price[stock_code] = price_range
 

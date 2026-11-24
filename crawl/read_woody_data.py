@@ -146,9 +146,10 @@ def get_est_single_url_sync(url):
                 results.append(row_data)
     
     except Exception as e:
-        print(f"Error processing {url} in get_est_single_url_sync: {str(e)}")
-        # Optionally re-raise or return empty list/error indicator
-        # raise e 
+        # Selenium 异常的 str(e) 自带完整堆栈，只取首行，避免每个 URL 刷一屏
+        first_line = str(e).splitlines()[0] if str(e) else type(e).__name__
+        print(f"Error processing {url} in get_est_single_url_sync: {first_line}")
+        print("  -> 请检查 chromedriver 与 Chrome 版本是否匹配；本源本轮返回空数据。")
     finally:
         if driver:
             driver.quit()
@@ -166,21 +167,28 @@ def save_results_to_txt(results, filename='woody_data.txt'):
     # Ensure directory exists
     os.makedirs(script_dir, exist_ok=True)
 
-    # Delete the file if it already exists for a clean save
-    if os.path.exists(filepath):
-        try:
-            os.remove(filepath)
-            print(f"Removed existing file: {filepath}")
-        except OSError as e:
-            print(f"Error removing existing file {filepath}: {e}")
+    # 本轮一条数据都没采到时（典型原因：chromedriver 版本错配），不要删除/覆盖旧缓存，
+    # 否则会把此前有效的实时溢价数据清空，影响所有依赖该文件的策略。
+    if not results and os.path.exists(filepath):
+        print(f"本轮未采集到任何数据，保留已有缓存：{filepath}")
+        return False
 
+    tmp_path = filepath + ".tmp"
     try:
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(tmp_path, 'w', encoding='utf-8') as f:
             for item in results:
                 f.write(str(item) + '\n')
+        os.replace(tmp_path, filepath)
         print(f"Results saved to {filepath}")
-    except IOError as e:
+        return True
+    except OSError as e:
         print(f"Error writing to file {filepath}: {e}")
+        try:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        except OSError:
+            pass
+        return False
 
 # --- 封装所有同步 I/O 操作 ---
 def execute_selenium_tasks_synchronously(urls, filename='woody_data.txt'):
